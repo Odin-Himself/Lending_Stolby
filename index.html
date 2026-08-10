@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<!--
+  ═══════════════════════════════════════════════════════════
+  КУЛЬТУРНО-РЕСТОРАННЫЙ КОМПЛЕКС «СТОЛБЫ» · РЫБИНСК
+  Структура проекта:
+    index.html
+    assets/
+      model/   ← сюда положите: model.obj, model.mtl и все текстуры .png
+      photos/  ← сюда положите ваши фотографии
+  ВАЖНО: запускайте через локальный сервер (npx serve / Live Server),
+  иначе браузер не даст загрузить .obj по file://
+  ═══════════════════════════════════════════════════════════
+-->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Столбы — культурно-ресторанный комплекс · Рыбинск</title>
+<meta name="description" content="Ресторан русской кухни, концертная площадка и литературный музей в историческом здании гостиницы купца Крашенинникова, 1811. Рыбинск, ул. Крестовая, 46.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Old+Standard+TT:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+/* ══════════ ДИЗАЙН-СИСТЕМА «СТОЛБЫ» ══════════ */
+:root{
+  --ink:#171009;        /* тёмное дерево, тени */
+  --ink-2:#221709;
+  --paper:#f1e8d7;      /* бумага меню */
+  --paper-2:#e7dabf;
+  --kraft:#c8a171;
+  --amber:#e8a33d;      /* лампы Эдисона */
+  --amber-2:#ffc46b;
+  --brick:#8a4030;      /* кирпич */
+  --velvet:#20605a;     /* бархат диванов */
+  --violet:#7a5bd6;     /* подсветка колонн */
+  --flame:#e07a2e;      /* цветы */
+  --line-d:rgba(241,232,215,.16);
+  --line-l:rgba(23,16,9,.22);
+  --display:'Playfair Display',serif;
+  --serif:'Old Standard TT',serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--serif);background:var(--ink);color:var(--paper);font-size:18px;line-height:1.65;overflow-x:hidden}
+::selection{background:var(--amber);color:var(--ink)}
+img{display:block;max-width:100%}
+a{color:inherit}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.12}
+.wrap{max-width:1200px;margin:0 auto;padding:0 5vw}
+
+/* бумажный шум */
+.paper-bg{background:var(--paper);color:var(--ink);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='140' height='140' filter='url(%23n)' opacity='.05'/></svg>")}
+.dark-bg{background:var(--ink);background-image:radial-gradient(60% 40% at 80% 0%,rgba(232,163,61,.08),transparent 60%),radial-gradient(40% 30% at 10% 20%,rgba(122,91,214,.06),transparent 60%)}
+
+/* заголовки секций */
+.overline{font-family:var(--serif);letter-spacing:.38em;text-transform:uppercase;font-size:.78rem;color:var(--amber)}
+.paper-bg .overline{color:var(--brick)}
+h2{font-size:clamp(2rem,4.6vw,3.4rem);margin:.35em 0 .5em}
+.fleuron{text-align:center;color:var(--amber);font-size:1.3rem;margin:0 0 1.2rem}
+.paper-bg .fleuron{color:var(--brick)}
+section{padding:clamp(70px,10vw,120px) 0;position:relative}
+
+/* ══════════ ШАПКА ══════════ */
+header{position:fixed;inset:0 0 auto;z-index:50;background:linear-gradient(rgba(23,16,9,.85),rgba(23,16,9,.4) 70%,transparent);backdrop-filter:blur(6px)}
+.nav{display:flex;align-items:center;gap:2rem;padding:1.1rem 5vw;max-width:1300px;margin:0 auto}
+.logo{display:flex;align-items:center;gap:.6rem;text-decoration:none;font-family:var(--display);font-weight:700;letter-spacing:.24em;font-size:1.05rem}
+.logo svg{width:26px;height:26px;color:var(--amber)}
+.nav nav{margin-left:auto;display:flex;gap:1.6rem}
+.nav nav a{text-decoration:none;font-size:.82rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(241,232,215,.75);transition:.25s}
+.nav nav a:hover{color:var(--amber-2)}
+.btn{display:inline-block;padding:.85em 1.9em;border:1px solid var(--amber);color:var(--amber-2);text-decoration:none;letter-spacing:.22em;text-transform:uppercase;font-size:.78rem;font-family:var(--serif);transition:.3s;background:transparent;cursor:pointer}
+.btn:hover{background:var(--amber);color:var(--ink);box-shadow:0 0 30px rgba(232,163,61,.35)}
+.btn-solid{background:var(--amber);color:var(--ink)}
+.btn-solid:hover{background:var(--amber-2)}
+@media(max-width:900px){.nav nav{display:none}}
+
+/* ══════════ HERO + 3D ══════════ */
+#hero{min-height:100svh;display:flex;align-items:center;overflow:hidden;
+  background:radial-gradient(55% 45% at 78% 38%,rgba(232,163,61,.16),transparent 65%),radial-gradient(35% 30% at 12% 70%,rgba(122,91,214,.10),transparent 60%),var(--ink)}
+#hero3d{position:absolute;inset:0;z-index:1}
+#scene{width:100%;height:100%;display:block;pointer-events:none}
+.hero-content{position:relative;z-index:2;max-width:660px;padding:16vh 5vw 14vh 6vw}
+.hero-content h1{font-size:clamp(3.2rem,8vw,6.4rem);letter-spacing:.14em;margin:.15em 0 .1em}
+.hero-sub{font-size:clamp(1rem,1.6vw,1.2rem);color:rgba(241,232,215,.8);max-width:34em}
+.hero-quote{margin:2.2rem 0 2.6rem;padding-left:1.4rem;border-left:2px solid var(--amber);font-style:italic;color:rgba(241,232,215,.72);max-width:30em}
+.hero-quote cite{display:block;margin-top:.5rem;font-style:normal;letter-spacing:.2em;font-size:.8rem;color:var(--amber)}
+.hero-cta{display:flex;gap:1.1rem;flex-wrap:wrap}
+.scroll-hint{position:absolute;bottom:2.2rem;left:50%;transform:translateX(-50%);z-index:2;color:rgba(241,232,215,.5);font-size:.72rem;letter-spacing:.34em;text-transform:uppercase;animation:hint 2.6s ease-in-out infinite}
+@keyframes hint{50%{transform:translate(-50%,8px)}}
+@media(max-width:820px){#hero3d{opacity:.45}.hero-content{padding-top:20vh}}
+
+/* ══════════ АРКИ / ФОТО-СЛОТЫ ══════════ */
+.arch{border-radius:999px 999px 14px 14px}
+.photo-slot{position:relative;aspect-ratio:var(--r,4/5);border:1px solid var(--line-l);background:rgba(23,16,9,.05);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.7rem;text-align:center;padding:1.4rem;color:rgba(23,16,9,.55);overflow:hidden}
+.dark-bg .photo-slot{border-color:var(--line-d);background:rgba(241,232,215,.04);color:rgba(241,232,215,.5)}
+.photo-slot .slot-mark{font-size:1.6rem;color:var(--brick)}
+.dark-bg .photo-slot .slot-mark{color:var(--amber)}
+.photo-slot figcaption{font-size:.85rem;letter-spacing:.14em;text-transform:uppercase}
+.photo-slot .slot-note{font-size:.72rem;font-style:italic;opacity:.7}
+/* когда вставите <img> — он сам ляжет поверх заглушки */
+.photo-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.photo-slot:has(img) .slot-mark,
+.photo-slot:has(img) figcaption,
+.photo-slot:has(img) .slot-note{display:none}
+
+/* ══════════ ИСТОРИЯ ══════════ */
+.history-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(2rem,5vw,5rem);align-items:start}
+.dropcap::first-letter{font-family:var(--display);font-size:3.6em;float:left;line-height:.82;padding-right:.14em;color:var(--brick)}
+.history-grid p+p{margin-top:1.1em}
+.timeline{display:flex;gap:2.2rem;margin-top:2.4rem;flex-wrap:wrap}
+.timeline div{border-top:1px solid var(--line-l);padding-top:.8rem;min-width:120px}
+.timeline b{font-family:var(--display);font-size:1.5rem;color:var(--brick);display:block}
+.timeline span{font-size:.85rem}
+.history-photo{position:sticky;top:110px}
+@media(max-width:900px){.history-grid{grid-template-columns:1fr}.history-photo{position:static;max-width:420px}}
+
+/* ══════════ МЕНЮ ══════════ */
+#menu{background:var(--paper-2);color:var(--ink)}
+.menu-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(2rem,5vw,5rem)}
+.toc{position:sticky;top:110px;align-self:start;border:1px solid var(--line-l);padding:2.2rem 2rem;border-radius:999px 999px 12px 12px;background:var(--paper)}
+.toc h3{letter-spacing:.3em;text-transform:uppercase;font-size:1.05rem;text-align:center;margin-bottom:1.6rem}
+.toc a{display:flex;align-items:baseline;gap:.6rem;text-decoration:none;color:var(--ink);padding:.55rem 0;font-size:.95rem}
+.toc a i{flex:1;border-bottom:2px dotted rgba(23,16,9,.4);transform:translateY(-4px)}
+.toc a:hover{color:var(--brick)}
+.chapter{margin:2.6rem 0 1rem;font-size:1.15rem;letter-spacing:.24em;text-transform:uppercase;color:var(--brick);display:flex;align-items:center;gap:1rem}
+.chapter::after{content:"";flex:1;border-top:1px solid var(--line-l)}
+.dish{display:flex;align-items:baseline;gap:.8rem;padding:.7rem 0}
+.dish-name{font-size:1.08rem}
+.dish-name em{display:block;font-size:.85rem;color:rgba(23,16,9,.6)}
+.dish .dots{flex:1;border-bottom:2px dotted rgba(23,16,9,.35);transform:translateY(-5px)}
+.price{font-family:var(--display);font-weight:700;color:var(--brick);white-space:nowrap}
+.menu-note{margin-top:2.4rem;font-size:.85rem;font-style:italic;color:rgba(23,16,9,.65);border-top:1px solid var(--line-l);padding-top:1rem}
+@media(max-width:900px){.menu-grid{grid-template-columns:1fr}.toc{position:static}}
+
+/* ══════════ АФИША ══════════ */
+.events-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;margin-top:2.5rem}
+.event{border:1px solid var(--line-d);padding:2.2rem 1.8rem;transition:.35s;background:rgba(241,232,215,.03)}
+.event:hover{border-color:var(--amber);transform:translateY(-6px);box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.event .mark{color:var(--amber);font-size:1.4rem}
+.event h3{font-size:1.35rem;margin:.7rem 0 .5rem}
+.event p{font-size:.92rem;color:rgba(241,232,215,.7)}
+.event .when{display:block;margin-top:1.2rem;font-size:.78rem;letter-spacing:.24em;text-transform:uppercase;color:var(--amber-2)}
+@media(max-width:900px){.events-grid{grid-template-columns:1fr}}
+
+/* ══════════ ГАЛЕРЕЯ (masonry) ══════════ */
+.gallery{columns:3;column-gap:18px;margin-top:2.5rem}
+.gallery .photo-slot{break-inside:avoid;margin-bottom:18px;width:100%}
+@media(max-width:900px){.gallery{columns:2}}
+@media(max-width:560px){.gallery{columns:1}}
+
+/* ══════════ КОНТАКТЫ ══════════ */
+.contacts-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,5vw,5rem);margin-top:2.5rem}
+.addr{font-style:normal;font-size:1.15rem;line-height:2}
+.addr b{font-family:var(--display);font-size:1.4rem}
+.addr a{color:var(--amber-2)}
+.form{display:grid;gap:1rem}
+.form input,.form select{background:transparent;border:1px solid var(--line-d);padding:.95em 1.1em;color:var(--paper);font-family:var(--serif);font-size:1rem;outline:none;transition:.25s}
+.form input:focus,.form select:focus{border-color:var(--amber)}
+.form select option{color:var(--ink)}
+.form ::placeholder{color:rgba(241,232,215,.45)}
+@media(max-width:900px){.contacts-grid{grid-template-columns:1fr}}
+
+footer{border-top:1px solid var(--line-d);padding:2rem 5vw;text-align:center;font-size:.8rem;letter-spacing:.18em;color:rgba(241,232,215,.5)}
+footer b{color:var(--amber)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a class="logo" href="#hero">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20 4c-6 0-12 5-14 12l-2 4 4-2c7-2 12-8 12-14z"/><path d="M6 18C10 12 15 8 19 6"/></svg>
+      СТОЛБЫ
+    </a>
+    <nav>
+      <a href="#history">История</a>
+      <a href="#menu">Меню</a>
+      <a href="#afisha">Афиша</a>
+      <a href="#gallery">Галерея</a>
+      <a href="#contacts">Контакты</a>
+    </nav>
+    <a class="btn" href="#contacts">Забронировать</a>
+  </div>
+</header>
+
+<!-- ═══════════ HERO: 3D-объект вращается за мышью ═══════════ -->
+<section id="hero">
+  <div id="hero3d"><canvas id="scene"></canvas></div>
+  <div class="hero-content">
+    <span class="overline">Рыбинск · Литературный город России</span>
+    <h1>«СТОЛБЫ»</h1>
+    <p class="hero-sub">Культурно-ресторанный комплекс в историческом здании гостиницы купца Крашенинникова — ресторан русской кухни, концертная площадка и литературный музей.</p>
+    <blockquote class="hero-quote">
+      Люди обедают, только обедают, а в это время слагается их счастье…
+      <cite>— А. П. Чехов</cite>
+    </blockquote>
+    <div class="hero-cta">
+      <a class="btn btn-solid" href="#contacts">Забронировать стол</a>
+      <a class="btn" href="#menu">Читать меню</a>
+    </div>
+  </div>
+  <span class="scroll-hint">листайте ↓</span>
+</section>
+
+<!-- ═══════════ ИСТОРИЯ ═══════════ -->
+<section id="history" class="paper-bg">
+  <div class="wrap">
+    <div class="fleuron">❦</div>
+    <div class="history-grid">
+      <div>
+        <span class="overline">От автора</span>
+        <h2>Дом, где обедают<br>и читают</h2>
+        <p class="dropcap">Ресторан «Столбы» носит имя гостиницы и заведения, располагавшихся в этом здании до революции. Название окрестности — «столбы» — жители Рыбинска окрестили колоннаду портика, которая особенно была украшена при постройке в 1811 году по проекту Карла Росси.</p>
+        <p>Рыбинск в XIX столетии был крупнейшим узлом внутренней торговли страны. Множество известных людей останавливались в этих стенах: Сухово-Кобылин, Успенский, Куприн, Фурманов, Салтыков-Щедрин. Здесь, как в книге, страница за страницей, слагалась литературная судьба города.</p>
+        <p>Сегодня «Столбы» продолжают эту традицию: ресторан русской кухни, поэтические вечера, музыкальные выступления и бронзовый памятник пишущей машинке — единственный в своём роде.</p>
+        <div class="timeline">
+          <div><b>1811</b><span>построено здание гостиницы</span></div>
+          <div><b>2022</b><span>Рыбинск — литературный музей</span></div>
+          <div><b>2025</b><span>открытие комплекса «Столбы»</span></div>
+        </div>
+      </div>
+      <!-- ══ ФОТО №1: вставьте <img src="assets/photos/interior.jpg" alt=""> внутрь figure ══ -->
+      <figure class="photo-slot arch history-photo" style="--r:4/5">
+        <img src="assets/photos/interior.jpg" alt="Фото шефа">
+        <span class="slot-mark">❦</span>
+        <figcaption>Интерьер зала</figcaption>
+        <span class="slot-note">место для вашего фото</span>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ МЕНЮ ═══════════ -->
+<section id="menu">
+  <div class="wrap">
+    <div class="fleuron">❦</div>
+    <span class="overline" style="display:block;text-align:center">Культурно-ресторанный комплекс</span>
+    <h2 style="text-align:center">Меню</h2>
+    <div class="menu-grid">
+      <aside class="toc">
+        <h3>Оглавление</h3>
+        <a href="#ch-1">I. Предисловие · Закуски <i></i> 4</a>
+        <a href="#ch-2">II. Глава I · Салаты <i></i> 6</a>
+        <a href="#ch-3">III. Глава II · Супы и похлёбки <i></i> 9</a>
+        <a href="#ch-4">IV. Глава III · Основные яства <i></i> 10</a>
+        <a href="#ch-5">V. Эпиграммы · Десерты <i></i> 12</a>
+      </aside>
+      <div>
+        <h3 class="chapter" id="ch-2">Глава I · Салаты</h3>
+        <div class="dish">
+          <span class="dish-name">Салат «Груня»<em>копчёная утка · козий сыр · сезонные листья</em></span>
+          <span class="dots"></span><span class="price">500 ₽</span>
+        </div>
+        <h3 class="chapter" id="ch-3">Глава II · Супы и похлёбки</h3>
+        <div class="dish">
+          <span class="dish-name">Щи простые<em>телятина · белые грибы</em></span>
+          <span class="dots"></span><span class="price">480 ₽</span>
+        </div>
+        <div class="dish">
+          <span class="dish-name">Уха «Царская»<em>тройная</em></span>
+          <span class="dots"></span><span class="price">700 ₽</span>
+        </div>
+        <h3 class="chapter" id="ch-4">Глава III · Основные яства</h3>
+        <div class="dish">
+          <span class="dish-name">Говядина по-строгановски<em>классика русской кухни</em></span>
+          <span class="dots"></span><span class="price">780 ₽</span>
+        </div>
+        <p class="menu-note">! Уважаемые посетители, если у вас есть аллергия на определённые продукты питания, сообщите об этом своему официанту. Полное меню — в заведении: листайте главы, как книгу.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ АФИША ═══════════ -->
+<section id="afisha" class="dark-bg">
+  <div class="wrap">
+    <div class="fleuron">❦</div>
+    <span class="overline" style="display:block;text-align:center">Афиша</span>
+    <h2 style="text-align:center">Вечера в «Столбах»</h2>
+    <div class="events-grid">
+      <article class="event"><span class="mark">❧</span><h3>Поэтические вечера</h3><p>Чтения при тёплом свете ламп — под шёпот книжных страниц, подвешенных к потолку.</p><span class="when">по пятницам · 19:00</span></article>
+      <article class="event"><span class="mark">❧</span><h3>Живая музыка</h3><p>Камерные концерты и музыкальные выступления в зале с колоннами и бархатом.</p><span class="when">по субботам · 20:00</span></article>
+      <article class="event"><span class="mark">❧</span><h3>Стендап и встречи</h3><p>Стендап-спектакли, творческие встречи и литературные клубы — каждый найдёт свою главу.</p><span class="when">следите за афишей</span></article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ ГАЛЕРЕЯ: места под ваши фото ═══════════ -->
+<section id="gallery" class="paper-bg">
+  <div class="wrap">
+    <div class="fleuron">❦</div>
+    <span class="overline" style="display:block;text-align:center">Галерея</span>
+    <h2 style="text-align:center">Страницы нашего дома</h2>
+    <div class="gallery">
+      <!-- ══ ФОТО №2–7: вставьте <img src="assets/photos/….jpg"> внутрь каждого figure ══ -->
+      <figure class="photo-slot arch" style="--r:4/5">
+        <img src="assets/photos/hall.jpg" alt="Основной зал">
+        <span class="slot-mark">❦</span><figcaption>Основной зал</figcaption><span class="slot-note">свет · бархат · колонны</span>
+      </figure>
+      
+      <figure class="photo-slot" style="--r:3/4">
+        <img src="assets/photos/pages.jpg" alt="Потолок из книжных страниц">.
+        <span class="slot-mark">❦</span><figcaption>Потолок из страниц</figcaption><span class="slot-note">ваше фото</span>
+      </figure>
+      
+      <figure class="photo-slot" style="--r:1/1">
+          <img src="assets/photos/chef.jpg" alt="Фото шефа">
+        <span class="slot-mark">❦</span><figcaption>Фото шефа</figcaption><span class="slot-note">ваше фото</span>
+      </figure>
+      
+      <figure class="photo-slot" style="--r:4/3">
+        <img src="assets/photos/serve.jpg" alt="Сервировка">
+        <span class="slot-mark">❦</span><figcaption>Сервировка</figcaption><span class="slot-note">ваше фото</span>
+      </figure>
+      
+      <figure class="photo-slot arch" style="--r:1/1">
+        <img src="assets/photos/menu.jpg" alt="Оглавление">  
+        <span class="slot-mark">❦</span><figcaption>Оглавление</figcaption><span class="slot-note">ваше фото</span>
+      </figure>
+      
+      <figure class="photo-slot" style="--r:3/4">
+        <img src="assets/photos/concert.jpg" alt="Вечера и концерты">
+        <span class="slot-mark">❦</span><figcaption>Вечера и концерты</figcaption><span class="slot-note">ваше фото</span>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ КОНТАКТЫ ═══════════ -->
+<section id="contacts" class="dark-bg">
+  <div class="wrap">
+    <div class="fleuron">❦</div>
+    <span class="overline" style="display:block;text-align:center">Эпилог</span>
+    <h2 style="text-align:center">Забронировать главу</h2>
+    <div class="contacts-grid">
+      <address class="addr">
+        <b>Рыбинск, ул. Крестовая, 46</b><br>
+        историческое здание гостиницы купца Крашенинникова<br>
+        <!-- замените телефон на актуальный -->
+        Телефон: <a href="tel:+70000000000">+7 (000) 000-00-00</a><br>
+        Ежедневно 12:00 – 00:00<br>
+        Мы во ВКонтакте: <a href="https://vk.ru/stolby46" target="_blank" rel="noopener">vk.ru/stolby46</a>
+      </address>
+      <!-- демо-форма: подключите бэкенд/Telegram-бота при необходимости -->
+      <form class="form" onsubmit="event.preventDefault();this.querySelector('button').textContent='Заявка отправлена ✔';">
+        <input type="text" placeholder="Ваше имя" required>
+        <input type="tel" placeholder="Телефон" required>
+        <input type="text" placeholder="Дата и время" onfocus="this.type='datetime-local'">
+        <select><option>2 гостя</option><option>1 гость</option><option>3 гостя</option><option>4 гостя</option><option>5+ гостей</option></select>
+        <button class="btn btn-solid" type="submit">Отправить заявку</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>© 2026 КУЛЬТУРНО-РЕСТОРАННЫЙ КОМПЛЕКС <b>«СТОЛБЫ»</b> · РЫБИНСК · 1811 ❦</footer>
+
+<!-- ═══════════ THREE.JS: 3D-объект ═══════════ -->
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+
+/* ── ваши файлы (лежат в assets/) ── */
+const MODEL_DIR = 'assets/';
+const MODEL_OBJ = 'SM_Bread_HP_01.obj';
+const MODEL_TEX = 'T_Bread_HP_DO.png';
+
+const holder = document.getElementById('hero3d');
+const renderer = new THREE.WebGLRenderer({canvas:document.getElementById('scene'),antialias:true,alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
+
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(40,1,.1,100);
+camera.position.set(0,.2,6);
+
+/* свет — тёплый, как в зале */
+scene.add(new THREE.HemisphereLight(0xffdfae,0x140b06,.55));
+const key = new THREE.PointLight(0xffb459,90,0,2); key.position.set(3,4,5);  scene.add(key);
+const rim = new THREE.PointLight(0x7a5bd6,35,0,2); rim.position.set(-4,2,-4); scene.add(rim);
+const fil = new THREE.DirectionalLight(0xfff1da,.8); fil.position.set(-2,3,4); scene.add(fil);
+
+const pivot = new THREE.Group(); scene.add(pivot);
+
+/* временная заглушка, пока модель грузится / если ошибка */
+let fallback = (()=>{
+  const g=new THREE.Group(), cols=[0x8a4030,0x20605a,0x4a3826];
+  for(let i=0;i<3;i++){
+    const w=2.1-i*.28,d=1.4-i*.16,h=.34;
+    const cover=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshStandardMaterial({color:cols[i],roughness:.55}));
+    const pages=new THREE.Mesh(new THREE.BoxGeometry(w,h*.6,d),new THREE.MeshStandardMaterial({color:0xe9dcc0,roughness:.9}));
+    pages.position.x=.08;
+    const b=new THREE.Group(); b.add(cover,pages);
+    b.position.y=(i-1)*.4; b.rotation.y=(i-1)*.4; g.add(b);
+  }
+  const quill=new THREE.Mesh(new THREE.ConeGeometry(.05,1.4,8),new THREE.MeshStandardMaterial({color:0xf1e8d7,roughness:.4}));
+  quill.position.set(.5,1.05,0); quill.rotation.z=-.6; g.add(quill);
+  g.rotation.y=.4; return g;
+})();
+pivot.add(fallback);
+
+/* пылинки в тёплом свете */
+const dust=(()=>{const N=140,p=new Float32Array(N*3);
+  for(let i=0;i<N;i++){p[i*3]=(Math.random()-.5)*11;p[i*3+1]=(Math.random()-.5)*6;p[i*3+2]=(Math.random()-.5)*4-1;}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(p,3));
+  const pts=new THREE.Points(g,new THREE.PointsMaterial({color:0xffc46b,size:.04,transparent:true,opacity:.5,blending:THREE.AdditiveBlending,depthWrite:false}));
+  scene.add(pts);return pts;})();
+
+/* центровка + масштаб любой модели */
+function mount(obj){
+  const box=new THREE.Box3().setFromObject(obj);
+  const s=box.getSize(new THREE.Vector3()), c=box.getCenter(new THREE.Vector3());
+  const k=3.0/Math.max(s.x,s.y,s.z);
+  obj.scale.setScalar(k); obj.position.set(-c.x*k,-c.y*k,-c.z*k);
+  pivot.add(obj);
+  if(fallback){pivot.remove(fallback);fallback=null;}
+}
+
+/* ── текстура: назначаем вручную, MTL не нужен ── */
+const texture = new THREE.TextureLoader().load(MODEL_DIR+MODEL_TEX);
+texture.colorSpace = THREE.SRGBColorSpace;
+texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+const breadMat = new THREE.MeshStandardMaterial({map:texture, roughness:.65, metalness:0});
+
+/* ── загрузка OBJ: форма берётся из файла прямо у вас на компьютере ── */
+new OBJLoader().setPath(MODEL_DIR).load(MODEL_OBJ, obj=>{
+  obj.traverse(n=>{
+    if(n.isMesh){
+      if(!n.geometry.attributes.normal) n.geometry.computeVertexNormals();
+      n.material = breadMat;
+    }
+  });
+  /* если буханка окажется «на боку» — раскомментируйте и подберите угол:
+     obj.rotation.set(Math.PI/2, 0, 0); */
+  mount(obj);
+  console.info('✔ Модель хлеба загружена');
+}, undefined, ()=>console.warn('Не удалось загрузить '+MODEL_DIR+MODEL_OBJ+'. Откройте сайт через локальный сервер (npx serve), а не двойным кликом по файлу.'));
+
+let mx=0,my=0,idle=true,timer;
+
+/* десктоп: хлеб следует за курсором */
+addEventListener('pointermove',e=>{
+  if(e.pointerType!=='touch'){
+    mx=(e.clientX/innerWidth)*2-1; my=(e.clientY/innerHeight)*2-1;
+    idle=false; clearTimeout(timer); timer=setTimeout(()=>idle=true,2200);
+  }
+});
+
+/* телефон: водите пальцем по верхнему экрану (даже по тексту) — хлеб повернётся */
+const heroSec = document.getElementById('hero');
+heroSec.style.touchAction='pan-y';
+heroSec.addEventListener('pointermove',e=>{
+  if(e.pointerType==='touch'){
+    const r=heroSec.getBoundingClientRect();
+    mx=((e.clientX-r.left)/r.width)*2-1;
+    my=((e.clientY-r.top)/r.height)*2-1;
+    idle=false; clearTimeout(timer); timer=setTimeout(()=>idle=true,1500);
+  }
+});
+
+function resize(){
+  const w=holder.clientWidth,h=holder.clientHeight;
+  renderer.setSize(w,h,false);
+  camera.aspect=w/h;
+  pivot.position.x = w/h>1.15 ? 1.3 : 0.5;   /* сдвиг хлеба вправо */
+  camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(holder); resize();
+
+const clock=new THREE.Clock(); let spin=0;
+renderer.setAnimationLoop(()=>{
+  const t=clock.getElapsedTime();
+  if(idle) spin+=.0035;
+  pivot.rotation.y += ((spin+mx*.85) - pivot.rotation.y)*.06;
+  pivot.rotation.x += ((my*.35)      - pivot.rotation.x)*.06;
+  pivot.position.y  = Math.sin(t*1.1)*.07;
+  dust.rotation.y   = t*.02;
+  renderer.render(scene,camera);
+});
+</script>
