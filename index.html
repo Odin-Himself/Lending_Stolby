@@ -103,6 +103,13 @@ header{position:fixed;inset:0 0 auto;z-index:50;background:linear-gradient(rgba(
 .photo-slot:has(img) .slot-mark,
 .photo-slot:has(img) figcaption,
 .photo-slot:has(img) .slot-note{display:none}
+/* «оживание» фото-контейнеров при наведении */
+.photo-slot img{transition:transform .7s cubic-bezier(.2,.6,.2,1)}
+@media(hover:hover){
+  .photo-slot{transition:transform .45s ease, box-shadow .45s ease, border-color .45s ease}
+  .photo-slot:hover{transform:translateY(-5px);box-shadow:0 18px 45px rgba(23,16,9,.22);border-color:var(--brick)}
+  .photo-slot:hover img{transform:scale(1.06)}   /* ← РЕГУЛЯТОР УВЕЛИЧЕНИЯ ФОТО */
+}
 
 /* ══════════ ИСТОРИЯ ══════════ */
 .history-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(2rem,5vw,5rem);align-items:start}
