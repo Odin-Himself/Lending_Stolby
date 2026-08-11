@@ -113,7 +113,11 @@ header{position:fixed;inset:0 0 auto;z-index:50;background:linear-gradient(rgba(
 .timeline b{font-family:var(--display);font-size:1.5rem;color:var(--brick);display:block}
 .timeline span{font-size:.85rem}
 .history-photo{position:sticky;top:110px}
-@media(max-width:900px){.history-grid{grid-template-columns:1fr}.history-photo{position:static;max-width:420px}}
+@media(max-width:900px){
+  .history-grid{grid-template-columns:1fr;gap:2rem;padding-bottom:10vh}  /* ← РЕГУЛЯТОР ЗОНЫ ПОД ФОТО */
+  .history-photo{position:relative;justify-self:center;max-width:420px;aspect-ratio:auto;margin-top:-14vh}  /* ← РЕГУЛЯТОР ПОЛОЖЕНИЯ ФОТО (сдвиг вверх) */
+  .photo-slot.history-photo img{position:relative;inset:auto;width:100%;height:auto}
+}
 
 /* ══════════ МЕНЮ ══════════ */
 #menu{background:var(--paper-2);color:var(--ink)}
