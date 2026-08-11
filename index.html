@@ -220,7 +220,7 @@ footer b{color:var(--amber)}
           <div><b>2025</b><span>открытие комплекса «Столбы»</span></div>
         </div>
       </div>
-      <!-- ══ ФОТО №1: вставьте <img src="assets/photos/interior.jpg" alt=""> внутрь figure ══ -->
+      <!-- ══ ФОТО №1 ══ -->
       <figure class="photo-slot arch history-photo" style="--r:4/5">
         <img src="assets/photos/interior.jpg" alt="Фото шефа">
         <span class="slot-mark">❦</span>
@@ -286,39 +286,33 @@ footer b{color:var(--amber)}
   </div>
 </section>
 
-<!-- ═══════════ ГАЛЕРЕЯ: места под ваши фото ═══════════ -->
+<!-- ═══════════ ГАЛЕРЕЯ ═══════════ -->
 <section id="gallery" class="paper-bg">
   <div class="wrap">
     <div class="fleuron">❦</div>
     <span class="overline" style="display:block;text-align:center">Галерея</span>
     <h2 style="text-align:center">Страницы нашего дома</h2>
     <div class="gallery">
-      <!-- ══ ФОТО №2–7: вставьте <img src="assets/photos/….jpg"> внутрь каждого figure ══ -->
       <figure class="photo-slot arch" style="--r:4/5">
         <img src="assets/photos/hall.jpg" alt="Основной зал">
         <span class="slot-mark">❦</span><figcaption>Основной зал</figcaption><span class="slot-note">свет · бархат · колонны</span>
       </figure>
-      
       <figure class="photo-slot" style="--r:3/4">
-        <img src="assets/photos/pages.jpg" alt="Потолок из книжных страниц">.
+        <img src="assets/photos/pages.jpg" alt="Потолок из книжных страниц">
         <span class="slot-mark">❦</span><figcaption>Потолок из страниц</figcaption><span class="slot-note">ваше фото</span>
       </figure>
-      
       <figure class="photo-slot" style="--r:1/1">
-          <img src="assets/photos/chef.jpg" alt="Фото шефа">
+        <img src="assets/photos/chef.jpg" alt="Фото шефа">
         <span class="slot-mark">❦</span><figcaption>Фото шефа</figcaption><span class="slot-note">ваше фото</span>
       </figure>
-      
       <figure class="photo-slot" style="--r:4/3">
         <img src="assets/photos/serve.jpg" alt="Сервировка">
         <span class="slot-mark">❦</span><figcaption>Сервировка</figcaption><span class="slot-note">ваше фото</span>
       </figure>
-      
       <figure class="photo-slot arch" style="--r:1/1">
-        <img src="assets/photos/menu.jpg" alt="Оглавление">  
+        <img src="assets/photos/menu.jpg" alt="Оглавление">
         <span class="slot-mark">❦</span><figcaption>Оглавление</figcaption><span class="slot-note">ваше фото</span>
       </figure>
-      
       <figure class="photo-slot" style="--r:3/4">
         <img src="assets/photos/concert.jpg" alt="Вечера и концерты">
         <span class="slot-mark">❦</span><figcaption>Вечера и концерты</figcaption><span class="slot-note">ваше фото</span>
@@ -337,12 +331,10 @@ footer b{color:var(--amber)}
       <address class="addr">
         <b>Рыбинск, ул. Крестовая, 46</b><br>
         историческое здание гостиницы купца Крашенинникова<br>
-        <!-- замените телефон на актуальный -->
         Телефон: <a href="tel:+70000000000">+7 (000) 000-00-00</a><br>
         Ежедневно 12:00 – 00:00<br>
         Мы во ВКонтакте: <a href="https://vk.ru/stolby46" target="_blank" rel="noopener">vk.ru/stolby46</a>
       </address>
-      <!-- демо-форма: подключите бэкенд/Telegram-бота при необходимости -->
       <form class="form" onsubmit="event.preventDefault();this.querySelector('button').textContent='Заявка отправлена ✔';">
         <input type="text" placeholder="Ваше имя" required>
         <input type="tel" placeholder="Телефон" required>
@@ -387,8 +379,9 @@ const fil = new THREE.DirectionalLight(0xfff1da,.8); fil.position.set(-2,3,4); s
 
 const pivot = new THREE.Group(); scene.add(pivot);
 
-/* временная заглушка, пока модель грузится / если ошибка */
-let fallback = (()=>{
+/* [ИЗМЕНЕНО 1/3] заглушка создаётся, но НЕ добавляется в сцену.
+   Показываем её ТОЛЬКО если модель не загрузилась. */
+const fallback = (()=>{
   const g=new THREE.Group(), cols=[0x8a4030,0x20605a,0x4a3826];
   for(let i=0;i<3;i++){
     const w=2.1-i*.28,d=1.4-i*.16,h=.34;
@@ -402,7 +395,7 @@ let fallback = (()=>{
   quill.position.set(.5,1.05,0); quill.rotation.z=-.6; g.add(quill);
   g.rotation.y=.4; return g;
 })();
-pivot.add(fallback);
+/* pivot.add(fallback);  ← убрано */
 
 /* пылинки в тёплом свете */
 const dust=(()=>{const N=140,p=new Float32Array(N*3);
@@ -411,14 +404,47 @@ const dust=(()=>{const N=140,p=new Float32Array(N*3);
   const pts=new THREE.Points(g,new THREE.PointsMaterial({color:0xffc46b,size:.04,transparent:true,opacity:.5,blending:THREE.AdditiveBlending,depthWrite:false}));
   scene.add(pts);return pts;})();
 
-/* центровка + масштаб любой модели */
+/* [ИЗМЕНЕНО 2/3] центровка + плавное появление хлеба */
 function mount(obj){
   const box=new THREE.Box3().setFromObject(obj);
   const s=box.getSize(new THREE.Vector3()), c=box.getCenter(new THREE.Vector3());
   const k=3.0/Math.max(s.x,s.y,s.z);
   obj.scale.setScalar(k); obj.position.set(-c.x*k,-c.y*k,-c.z*k);
+
+  /* начинаем с нулевой непрозрачности */
+  obj.traverse(n=>{
+    if(n.isMesh && n.material){
+      n.material.transparent = true;
+      n.material.opacity = 0;
+      n.material.needsUpdate = true;
+    }
+  });
+
   pivot.add(obj);
-  if(fallback){pivot.remove(fallback);fallback=null;}
+
+  /* плавное проявление за 600мс */
+  const startTime = performance.now();
+  function fadeIn(){
+    const elapsed = performance.now() - startTime;
+    const progress = Math.min(elapsed / 600, 1);
+    /* easeOut — быстро появляется и плавно завершается */
+    const eased = 1 - Math.pow(1 - progress, 3);
+    obj.traverse(n=>{
+      if(n.isMesh && n.material) n.material.opacity = eased;
+    });
+    if(progress < 1){
+      requestAnimationFrame(fadeIn);
+    } else {
+      obj.traverse(n=>{
+        if(n.isMesh && n.material){
+          n.material.transparent = false;
+          n.material.opacity = 1;
+          n.material.needsUpdate = true;
+        }
+      });
+    }
+  }
+  requestAnimationFrame(fadeIn);
 }
 
 /* ── текстура: назначаем вручную, MTL не нужен ── */
@@ -427,7 +453,7 @@ texture.colorSpace = THREE.SRGBColorSpace;
 texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
 const breadMat = new THREE.MeshStandardMaterial({map:texture, roughness:.65, metalness:0});
 
-/* ── загрузка OBJ: форма берётся из файла прямо у вас на компьютере ── */
+/* [ИЗМЕНЕНО 3/3] загрузка OBJ: при ошибке — показываем заглушку-книги */
 new OBJLoader().setPath(MODEL_DIR).load(MODEL_OBJ, obj=>{
   obj.traverse(n=>{
     if(n.isMesh){
@@ -435,11 +461,13 @@ new OBJLoader().setPath(MODEL_DIR).load(MODEL_OBJ, obj=>{
       n.material = breadMat;
     }
   });
-  /* если буханка окажется «на боку» — раскомментируйте и подберите угол:
-     obj.rotation.set(Math.PI/2, 0, 0); */
   mount(obj);
   console.info('✔ Модель хлеба загружена');
-}, undefined, ()=>console.warn('Не удалось загрузить '+MODEL_DIR+MODEL_OBJ+'. Откройте сайт через локальный сервер (npx serve), а не двойным кликом по файлу.'));
+}, undefined, ()=>{
+  /* показываем книги ТОЛЬКО если хлеб не загрузился */
+  pivot.add(fallback);
+  console.warn('Не удалось загрузить '+MODEL_DIR+MODEL_OBJ+'. Показана заглушка (книги). Проверьте путь к файлу.');
+});
 
 let mx=0,my=0,idle=true,timer;
 
@@ -451,7 +479,7 @@ addEventListener('pointermove',e=>{
   }
 });
 
-/* телефон: водите пальцем по верхнему экрану (даже по тексту) — хлеб повернётся */
+/* телефон: водите пальцем по верхнему экрану — хлеб повернётся */
 const heroSec = document.getElementById('hero');
 heroSec.style.touchAction='pan-y';
 heroSec.addEventListener('pointermove',e=>{
@@ -467,7 +495,7 @@ function resize(){
   const w=holder.clientWidth,h=holder.clientHeight;
   renderer.setSize(w,h,false);
   camera.aspect=w/h;
-  pivot.position.x = w/h>1.15 ? 1.3 : 0.5;   /* сдвиг хлеба вправо */
+  pivot.position.x = w/h>1.15 ? 1.3 : 0.5;
   camera.updateProjectionMatrix();
 }
 new ResizeObserver(resize).observe(holder); resize();
@@ -483,3 +511,5 @@ renderer.setAnimationLoop(()=>{
   renderer.render(scene,camera);
 });
 </script>
+</body>
+</html>
